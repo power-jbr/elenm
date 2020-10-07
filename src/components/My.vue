@@ -2,8 +2,8 @@
     <div>
         <div class="he">
             <p class="left" @click="fan()">〈</p>
-            <p class="center" :style="{ marginLeft: '31px' }">{{this.$route.query.val}}</p>
-            <p class="right" @click="fan()">切换城市</p>
+            <p class="center">我的</p>
+            <p class="right">〉</p>
         </div>
     </div>
 </template>
@@ -12,15 +12,15 @@
 export default {
     data() {
         return {
-
+            id:''
         };
     },
     created() {
 
     },
     mounted() {
-        // this.$route.query.val
-        console.log(this.$route.query)
+        this.id = localStorage.getItem('xid')
+        console.log(this.id)
     },
     methods: {
         fan(){
@@ -30,8 +30,8 @@ export default {
 };
 </script>
 
-<style lang='scss'>
-.he {
+<style scoped lang='scss'>
+.he{
   width: 100%;
   height: 50px;
   display: flex;
@@ -39,9 +39,8 @@ export default {
   box-sizing: border-box;
   padding: 0 10px;
   color: white;
-  background: #3190e8;
+  background: #3190E8;
   position: fixed;
   z-index: 1000;
-  margin-bottom: 50px;
 }
 </style>

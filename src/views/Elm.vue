@@ -1,6 +1,6 @@
 <template>
     <div class="b">
-    <Header></Header>
+    <Header :id='id'></Header>
         <div class="box">
             <div class="cont">
                 <div class="city_tip" id="top">
@@ -12,11 +12,19 @@
                     <span class="arrow_right">〉</span>
                 </div>
 
-                <div class="grid">
+                <!-- <div class="grid">
                     <p>热门城市</p>
                     <van-grid class="van-grid">
                         <van-grid-item class="item" v-for="(item,key) in hot" :key='key' :text="item.name" />
                     </van-grid>
+                </div> -->
+                <div class="grid">
+                    <p>热门城市</p>
+                    <ol class="van-grid">
+                        <li @click="xq(item.id,item.name)" v-for="(item,key) in hot" :key='key'>
+                            <span>{{ item.name }}</span>
+                        </li>
+                    </ol>
                 </div>
 
                 <!-- <div class="city_a">
@@ -72,26 +80,27 @@ export default {
             list:{},
             flag:false,
             obj:[],
+            id:'',
         };
     },
     created() {
 
     },
     async mounted() {
-        // let { data } = await this.$Axios.get('http://elm.cangdu.org/v1/cities?type=guess')
-        let { data } = await ajaxcityG('guess')
+        let { data } = await this.$Axios.get('http://elm.cangdu.org/v1/cities?type=guess')
+        // let { data } = await ajaxcityG('guess')
         console.log(data)
         this.loc.push(data)
         // console.log(this.loc)
 
-        let { data:res } = await this.$get('http://elm.cangdu.org/v1/cities?type=hot')
+        let { data:res } = await this.$Axios.get('http://elm.cangdu.org/v1/cities?type=hot')
         this.hot = res
-        // console.log(this.hot)
+        console.log(this.hot)
 
-        let { data:msg } = await this.$get('http://elm.cangdu.org/v1/cities?type=group')
+        let { data:msg } = await this.$Axios.get('http://elm.cangdu.org/v1/cities?type=group')
         let px=Object.keys(msg)
         px.sort()
-        console.log(px)
+        // console.log(px)
 
         for(let i in px){
             this.list[px[i]]=msg[px[i]]
@@ -99,8 +108,8 @@ export default {
 
         this.obj.push(this.list)
 
-        console.log(this.obj)
-        console.log(this.list)
+        // console.log(this.obj)
+        // console.log(this.list)
 
         this.iscroll = new IScroll('.box',{})
         this.$nextTick(()=>{
@@ -116,11 +125,8 @@ export default {
             }
         })
 
-        // let md=document.getElementByClass('md')
-
-        // if(md.hasAttribute("href")){
-        //     md.removeAttrubute("href");
-        // }
+        this.id = localStorage.getItem('xid')
+        console.log(this.id)
         
     },
     methods: {
@@ -135,6 +141,29 @@ export default {
                     val:val
                 }
             })
+        },
+        xq(id,name){
+            this.$http.get(`/v1/pois?type=search$city_id=${id}&keyword=${name}`).then((data)=>{
+                console.log(data)
+                this.$router.push({
+                   path:'/xq',
+                   query:{
+                       data:data,
+                       name:name,
+                       id:id,
+                   } 
+                })
+            })
+            // this.$http.get(`http://elm.cangdu.org/v1/user?user_id=${id}`).then((data) => {
+            //     console.log(data)
+            //     this.$router.push({
+            //        path:'/xq',
+            //        query:{
+            //            data:data,
+            //            name:name
+            //        } 
+            //     })
+            // })
         }
     },
     components: {
@@ -148,10 +177,10 @@ export default {
     height: 100%;
     position: fixed;
     right: 0;
-    top: 170px;
+    top: 180px;
     a{
         display: block;
-        margin-top: 5px;
+        margin-top: 7px;
         color: black;
         // color: #3190e8;
     }
@@ -232,7 +261,7 @@ ul,ol{
     float: right;
 }
 .grid{
-    margin-top: 20px;
+    width: 100%;
     p{
         width: 100%;
         height: 40px;
@@ -241,13 +270,33 @@ ul,ol{
         text-indent: 13px;
         background: white;
     }
+    // .van-grid{
+    //     margin-top: -14px;
+    //     border-bottom: 2px solid #E8E8E8;
+    //     .item{
+    //         border: 1px solid #E8E8E8;
+    //         border-left: none;
+    //         border-bottom: none;
+    //     }
+    // }
     .van-grid{
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        background: white;
         margin-top: -14px;
-        border-bottom: 2px solid #E8E8E8;
-        .item{
-            border: 1px solid #E8E8E8;
+        li{
+            width: 98px;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            font-size: 13px;
+            border: 1px solid #ddd;
             border-left: none;
             border-bottom: none;
+            span{
+                color: #3190e8;
+            }
         }
     }
 }

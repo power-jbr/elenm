@@ -36,14 +36,18 @@
 
         <div class="sx" v-show="flag">
             <p>{{ sx.message }}</p>
+            <p>{{ ys }}</p>
             <button @click="qr">确认</button>
         </div>
     </div>
 </template>
 
 <script>
-import {ajaxcityP} from '../utils/api'
-import bus from '../plugins/bus'
+import axios from 'axios'
+axios.defaults.withCredentials=true;//让ajax携带cookie
+
+// import {ajaxcityP} from '../utils/api'
+// import bus from '../plugins/bus'
 import $ from 'jquery'
 import Swiper from './Swiper'
 export default {
@@ -58,6 +62,8 @@ export default {
             yzm:'',
             sx:[],
             flag:false,
+            ys:'',
+            xid:'',
         };
     },
     created() {
@@ -76,7 +82,7 @@ export default {
             this.$router.go(-1)
         },
         img(){
-            this.$Axios.post('http://elm.cangdu.org/v1/captchas').then((res) => {
+            axios.post('http://elm.cangdu.org/v1/captchas').then((res) => {
                 console.log(res)      
                 this.src=res.data.code
             })
@@ -105,21 +111,47 @@ export default {
                 this.setCookie("cap",this.yzm,2)
                 this.setCookie("SID",100,2)
 
-                this.$Axios.post('http://elm.cangdu.org/v2/login',{'username':this.name,'password':this.pwd,'captcha_code':this.yzm}).then((res) => {
-                    console.log(res)
+                axios.post('/api/v2/login',{
+                    username:this.name,
+                    password:this.pwd,
+                    captcha_code:this.yzm
+                    }).then((res) => {
                     this.sx=res.data
-                    console.log(this.sx)
                     if(this.sx.message=='验证码失效'){
                         this.flag=true
+                    }
+                    
+                    this.xid=this.sx.id
+
+                    if(this.name==this.sx.username){
+                        let xid = JSON.parse(localStorage.getItem('xid'))
+
+                        xid=this.xid
+                        this.$router.push({
+                            path:'/',
+                            query:{
+                                id:xid
+                            }
+                        })
+                        console.log(this.xid)
+                        localStorage.setItem('xid',JSON.stringify(xid))
                     }
                 })
                 return true
             }
         },
+        // setCookie(key,value,t){
+        //     var oDate=new Date();
+        //     oDate.setDate(oDate.getDate()+t);
+        //     document.cookie=key+"="+value+"; expires="+oDate.toDateString();
+        // },
         qr(){
             this.flag=false
         }
     },
+    watch:{
+
+    },
     components: {
         Swiper
     }
