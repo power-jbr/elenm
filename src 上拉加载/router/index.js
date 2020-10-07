@@ -1,27 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Elm from '../views/Elm.vue'
-import Login from '../views/Login.vue'
-import Detail from '../views/Detail.vue'
+import Shop from '../components/Shop.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Elm',
-    component: Elm
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/detail',
-    name: 'Detail',
-    component: Detail
+    name: 'Shop',
+    component: Shop
   },
   {
     path: '/about',
